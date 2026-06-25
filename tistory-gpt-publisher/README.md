@@ -36,15 +36,36 @@ npx prisma migrate dev --name init
 npm run dev
 ```
 
-## Vercel 배포
+## Vercel 자동 배포
 
-1. Vercel에서 `khs0927/Naver_Blog` 저장소를 Import합니다.
-2. Root Directory를 `tistory-gpt-publisher`로 지정합니다.
-3. Framework Preset은 Next.js를 선택합니다.
-4. Environment Variables에 `.env.example` 항목을 입력합니다.
-5. Build Command: `npm run build`
-6. Install Command: `npm install`
-7. Output은 Next.js 기본값을 사용합니다.
+이 저장소에는 루트 `.github/workflows/vercel-deploy.yml`이 포함되어 있습니다.
+
+`main` 브랜치에 push 또는 PR merge가 발생하면 GitHub Actions가 Vercel Production Deploy를 실행합니다.
+
+필수 GitHub Secrets:
+
+- `VERCEL_TOKEN`
+- `VERCEL_ORG_ID`
+- `VERCEL_PROJECT_ID`
+
+Vercel 프로젝트 설정값:
+
+- Root Directory: `tistory-gpt-publisher`
+- Framework Preset: `Next.js`
+- Install Command: `npm install`
+- Build Command: `npm run build`
+
+## Vercel 환경변수
+
+Vercel Project Settings → Environment Variables에 `.env.example` 항목을 입력합니다.
+
+필수:
+
+- `DATABASE_URL`
+- `APP_API_KEY`
+- `WORKER_SECRET`
+- `GITHUB_REPO`
+- `GITHUB_PAT`
 
 ## GitHub Secrets
 
@@ -58,6 +79,7 @@ Repository Settings → Secrets and variables → Actions → New repository sec
 - `TISTORY_BLOG_NAME`
 - `TISTORY_BLOG_URL`
 - `TISTORY_COOKIE_JSON`
+- `TISTORY_DEFAULT_CATEGORY`
 
 ## Custom GPT Actions 연결
 
