@@ -1,0 +1,162 @@
+openapi: 3.1.0
+info:
+  title: Tistory GPT Publisher API
+  version: 0.1.0
+  description: Custom GPT에서 자연어 명령으로 티스토리 포스팅 작업을 생성하고 실행하는 API입니다.
+servers:
+  - url: https://YOUR-VERCEL-DOMAIN.vercel.app
+components:
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: x-api-key
+  schemas:
+    DraftRequest:
+      type: object
+      properties:
+        instruction:
+          type: string
+          description: 자연어 명령. 예: 건축 인허가 자동화 주제로 글 작성.
+        topic:
+          type: string
+        title:
+          type: string
+        bodyMarkdown:
+          type: string
+          description: Custom GPT가 직접 작성한 Markdown 본문. 없으면 Worker가 OPENAI_API_KEY로 생성 시도.
+        category:
+          type: string
+        tags:
+          type: array
+          items:
+            type: string
+        publishMode:
+          type: string
+          enum: [private, public, draft]
+          default: private
+        runNow:
+          type: boolean
+          default: true
+        intervalMinutes:
+          type: integer
+          minimum: 5
+          maximum: 1440
+        count:
+          type: integer
+          minimum: 1
+          maximum: 20
+          default: 1
+        scheduledAt:
+          type: string
+          format: date-time
+      required: []
+    ScheduleRequest:
+      type: object
+      properties:
+        instruction:
+          type: string
+        topicSeed:
+          type: string
+        category:
+          type: string
+        tags:
+          type: array
+          items:
+            type: string
+        publishMode:
+          type: string
+          enum: [private, public, draft]
+          default: private
+        intervalMinutes:
+          type: integer
+          minimum: 5
+          maximum: 43200
+        count:
+          type: integer
+          minimum: 1
+          maximum: 365
+        firstRunAt:
+          type: string
+          format: date-time
+      required: [instruction]
+security:
+  - ApiKeyAuth: []
+paths:
+  /api/health:
+    get:
+      operationId: healthCheck
+      summary: 서버 상태 확인
+      responses:
+        '200':
+          description: OK
+  /api/posts/draft:
+    post:
+      operationId: createTistoryDraftJob
+      summary: 티스토리 포스팅 작업 생성
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DraftRequest'
+      responses:
+        '200':
+          description: 생성된 작업 목록
+  /api/schedules:
+    post:
+      operationId: createPostingSchedule
+      summary: 반복 포스팅 일정 생성
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ScheduleRequest'
+      responses:
+        '200':
+          description: 생성된 일정
+    get:
+      operationId: listPostingSchedules
+      summary: 반복 포스팅 일정 조회
+      responses:
+        '200':
+          description: 일정 목록
+  /api/jobs:
+    get:
+      operationId: listPostingJobs
+      summary: 포스팅 작업 목록 조회
+      responses:
+        '200':
+          description: 작업 목록
+  /api/jobs/{id}/retry:
+    post:
+      operationId: retryPostingJob
+      summary: 실패한 포스팅 작업 재시도
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: 재시도됨
+  /api/topics/generate:
+    post:
+      operationId: generateTopicCandidates
+      summary: 주제 후보 생성
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                seed:
+                  type: string
+                count:
+                  type: integer
+      responses:
+        '200':
+          description: 주제 후보
