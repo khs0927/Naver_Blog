@@ -4,7 +4,7 @@ Custom GPT의 자연어 명령으로 티스토리 포스팅 작업을 만들고,
 
 ## 현재 저장소 구성
 
-기존 `Naver_Blog` 루트 프로젝트는 정리 중이며, 실제 사용할 프로젝트는 아래 경로입니다.
+기존 `Naver_Blog` 루트 프로젝트는 정리했으며, 실제 사용할 프로젝트는 아래 경로입니다.
 
 ```txt
 tistory-gpt-publisher/
@@ -58,8 +58,6 @@ Repository Settings → Secrets and variables → Actions → New repository sec
 - `TISTORY_BLOG_NAME`
 - `TISTORY_BLOG_URL`
 - `TISTORY_COOKIE_JSON`
-- `OPENAI_API_KEY` 선택
-- `OPENAI_MODEL` 선택
 
 ## Custom GPT Actions 연결
 
