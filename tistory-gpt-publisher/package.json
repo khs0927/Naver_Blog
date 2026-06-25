@@ -1,0 +1,39 @@
+{
+  "name": "tistory-gpt-publisher",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "next dev",
+    "build": "prisma generate && next build",
+    "start": "next start",
+    "lint": "next lint",
+    "prisma:generate": "prisma generate",
+    "prisma:migrate": "prisma migrate dev",
+    "worker:publish": "tsx scripts/publish-job.ts",
+    "worker:run-due-schedules": "tsx scripts/run-due-schedules.ts",
+    "worker:check-session": "tsx scripts/check-tistory-session.ts",
+    "playwright:install": "playwright install chromium"
+  },
+  "dependencies": {
+    "@prisma/client": "latest",
+    "next": "latest",
+    "playwright": "latest",
+    "prisma": "latest",
+    "react": "latest",
+    "react-dom": "latest",
+    "zod": "latest"
+  },
+  "devDependencies": {
+    "@types/node": "latest",
+    "@types/react": "latest",
+    "@types/react-dom": "latest",
+    "eslint": "latest",
+    "eslint-config-next": "latest",
+    "tsx": "latest",
+    "typescript": "latest"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
