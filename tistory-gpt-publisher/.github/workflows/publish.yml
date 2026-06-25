@@ -13,6 +13,9 @@ jobs:
   publish:
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: tistory-gpt-publisher
     env:
       APP_BASE_URL: ${{ secrets.APP_BASE_URL }}
       APP_API_KEY: ${{ secrets.APP_API_KEY }}
@@ -21,8 +24,6 @@ jobs:
       TISTORY_BLOG_URL: ${{ secrets.TISTORY_BLOG_URL }}
       TISTORY_COOKIE_JSON: ${{ secrets.TISTORY_COOKIE_JSON }}
       TISTORY_DEFAULT_CATEGORY: ${{ secrets.TISTORY_DEFAULT_CATEGORY }}
-      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-      OPENAI_MODEL: ${{ secrets.OPENAI_MODEL }}
       JOB_ID: ${{ github.event.client_payload.jobId || inputs.jobId }}
     steps:
       - uses: actions/checkout@v4
@@ -30,6 +31,7 @@ jobs:
         with:
           node-version: 20
           cache: npm
+          cache-dependency-path: tistory-gpt-publisher/package-lock.json
       - run: npm install
       - run: npx playwright install --with-deps chromium
       - run: npm run worker:publish -- --job-id "$JOB_ID"
