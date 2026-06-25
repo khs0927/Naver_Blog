@@ -3,7 +3,7 @@ export async function dispatchPublishJob(jobId: string) {
   const token = process.env.GITHUB_PAT;
 
   if (!repo || !token) {
-    console.warn('GITHUB_REPO or GITHUB_PAT is missing. Skipping repository_dispatch.');
+    console.warn('GITHUB_REPO or GITHUB_PAT is missing. Skipping dispatch.');
     return { dispatched: false, reason: 'missing_github_config' };
   }
 
@@ -23,7 +23,7 @@ export async function dispatchPublishJob(jobId: string) {
 
   if (!res.ok) {
     const text = await res.text();
-    throw new Error(`GitHub dispatch failed: ${res.status} ${text}`);
+    throw new Error(`GitHub workflow dispatch failed: ${res.status} ${text}`);
   }
 
   return { dispatched: true };
