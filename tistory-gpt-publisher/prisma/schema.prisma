@@ -1,0 +1,90 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum PostStatus {
+  QUEUED
+  RUNNING
+  DRAFTED
+  PUBLISHED
+  FAILED
+  CANCELED
+}
+
+enum JobStatus {
+  QUEUED
+  RUNNING
+  SUCCEEDED
+  FAILED
+  CANCELED
+}
+
+enum PublishMode {
+  PRIVATE
+  PUBLIC
+  DRAFT
+}
+
+model Post {
+  id             String      @id @default(cuid())
+  title          String
+  topic          String?
+  bodyMarkdown   String?     @db.Text
+  bodyHtml       String?     @db.Text
+  category       String?
+  tags           String[]
+  status         PostStatus  @default(QUEUED)
+  publishMode    PublishMode @default(PRIVATE)
+  tistoryUrl     String?
+  errorMessage   String?     @db.Text
+  scheduledAt    DateTime?
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+  jobs           Job[]
+}
+
+model Job {
+  id           String    @id @default(cuid())
+  postId       String
+  post         Post      @relation(fields: [postId], references: [id], onDelete: Cascade)
+  status       JobStatus @default(QUEUED)
+  runAfter     DateTime  @default(now())
+  lockedAt     DateTime?
+  attempts     Int       @default(0)
+  maxAttempts  Int       @default(3)
+  lastError    String?   @db.Text
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  @@index([status, runAfter])
+  @@index([postId])
+}
+
+model Schedule {
+  id              String      @id @default(cuid())
+  instruction     String      @db.Text
+  topicSeed       String?
+  category        String?
+  tags            String[]
+  publishMode     PublishMode @default(PRIVATE)
+  intervalMinutes Int         @default(1440)
+  remainingCount  Int?
+  nextRunAt       DateTime
+  enabled         Boolean     @default(true)
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+}
+
+model RunLog {
+  id        String   @id @default(cuid())
+  jobId     String?
+  level     String
+  message   String   @db.Text
+  meta      Json?
+  createdAt DateTime @default(now())
+}
