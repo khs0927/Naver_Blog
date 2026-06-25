@@ -1,0 +1,30 @@
+name: Queue Runner
+
+on:
+  schedule:
+    - cron: '*/5 * * * *'
+  workflow_dispatch:
+
+jobs:
+  run-due-job:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      APP_BASE_URL: ${{ secrets.APP_BASE_URL }}
+      WORKER_SECRET: ${{ secrets.WORKER_SECRET }}
+      TISTORY_BLOG_NAME: ${{ secrets.TISTORY_BLOG_NAME }}
+      TISTORY_BLOG_URL: ${{ secrets.TISTORY_BLOG_URL }}
+      TISTORY_COOKIE_JSON: ${{ secrets.TISTORY_COOKIE_JSON }}
+      TISTORY_DEFAULT_CATEGORY: ${{ secrets.TISTORY_DEFAULT_CATEGORY }}
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+      OPENAI_MODEL: ${{ secrets.OPENAI_MODEL }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm install
+      - run: npx playwright install --with-deps chromium
+      - run: npm run worker:run-due-schedules
+      - run: npm run worker:publish
