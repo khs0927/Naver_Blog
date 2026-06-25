@@ -2,6 +2,16 @@
 
 Custom GPT의 자연어 명령으로 티스토리 포스팅 작업을 만들고, Vercel API와 GitHub Actions Worker를 통해 Playwright로 티스토리에 비공개 저장하는 자동화 스타터입니다.
 
+## 현재 저장소 구성
+
+기존 `Naver_Blog` 루트 프로젝트는 정리하고, 실제 사용할 프로젝트는 아래 경로입니다.
+
+```txt
+tistory-gpt-publisher/
+```
+
+Vercel에서 Import할 때 반드시 Root Directory를 `tistory-gpt-publisher`로 지정하세요.
+
 ## 핵심 구조
 
 ```txt
@@ -18,6 +28,7 @@ Custom GPT Actions
 ## 빠른 시작
 
 ```bash
+cd tistory-gpt-publisher
 npm install
 cp .env.example .env
 npx prisma generate
@@ -27,11 +38,13 @@ npm run dev
 
 ## Vercel 배포
 
-1. 이 프로젝트를 GitHub에 올립니다.
-2. Vercel에서 GitHub Repository를 Import합니다.
-3. Environment Variables에 `.env.example` 항목을 입력합니다.
-4. Build Command: `npm run build`
-5. Output은 Next.js 기본값을 사용합니다.
+1. Vercel에서 `khs0927/Naver_Blog` 저장소를 Import합니다.
+2. Root Directory를 `tistory-gpt-publisher`로 지정합니다.
+3. Framework Preset은 Next.js를 선택합니다.
+4. Environment Variables에 `.env.example` 항목을 입력합니다.
+5. Build Command: `npm run build`
+6. Install Command: `npm install`
+7. Output은 Next.js 기본값을 사용합니다.
 
 ## GitHub Secrets
 
