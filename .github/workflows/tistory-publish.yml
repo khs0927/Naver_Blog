@@ -1,0 +1,34 @@
+name: Tistory Publish Worker
+
+on:
+  repository_dispatch:
+    types: [publish-post]
+  workflow_dispatch:
+    inputs:
+      jobId:
+        description: 'Job ID to publish'
+        required: true
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: tistory-gpt-publisher
+    env:
+      APP_BASE_URL: ${{ secrets.APP_BASE_URL }}
+      WORKER_SECRET: ${{ secrets.WORKER_SECRET }}
+      TISTORY_BLOG_NAME: ${{ secrets.TISTORY_BLOG_NAME }}
+      TISTORY_BLOG_URL: ${{ secrets.TISTORY_BLOG_URL }}
+      TISTORY_COOKIE_JSON: ${{ secrets.TISTORY_COOKIE_JSON }}
+      TISTORY_DEFAULT_CATEGORY: ${{ secrets.TISTORY_DEFAULT_CATEGORY }}
+      JOB_ID: ${{ github.event.client_payload.jobId || inputs.jobId }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npm install
+      - run: npx playwright install --with-deps chromium
+      - run: npm run worker:publish -- --job-id "$JOB_ID"
