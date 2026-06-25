@@ -65,7 +65,7 @@ async function main() {
       bodyHtml: post.bodyHtml || markdownToHtml(bodyMarkdown || ''),
       category: post.category,
       tags: post.tags,
-      publishMode: post.publishMode
+      publishMode: post.publishMode as 'PRIVATE' | 'PUBLIC' | 'DRAFT'
     });
 
     await api(`/api/jobs/${job.id}/complete`, {
