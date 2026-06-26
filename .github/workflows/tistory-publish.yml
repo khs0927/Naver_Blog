@@ -25,10 +25,25 @@ jobs:
       TISTORY_DEFAULT_CATEGORY: ${{ secrets.TISTORY_DEFAULT_CATEGORY }}
       JOB_ID: ${{ github.event.client_payload.jobId || inputs.jobId }}
     steps:
+      - name: Check required secrets
+        id: config
+        shell: bash
+        run: |
+          if [ -z "$APP_BASE_URL" ] || [ -z "$WORKER_SECRET" ] || [ -z "$TISTORY_BLOG_NAME" ] || [ -z "$TISTORY_COOKIE_JSON" ]; then
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+            echo "Tistory Publish Worker is not configured yet. Skipping without failure."
+          else
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          fi
       - uses: actions/checkout@v4
+        if: steps.config.outputs.ready == 'true'
       - uses: actions/setup-node@v4
+        if: steps.config.outputs.ready == 'true'
         with:
           node-version: 20
       - run: npm install
+        if: steps.config.outputs.ready == 'true'
       - run: npx playwright install --with-deps chromium
+        if: steps.config.outputs.ready == 'true'
       - run: npm run worker:publish -- --job-id "$JOB_ID"
+        if: steps.config.outputs.ready == 'true'
