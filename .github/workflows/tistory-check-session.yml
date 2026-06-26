@@ -17,10 +17,25 @@ jobs:
       TISTORY_BLOG_URL: ${{ secrets.TISTORY_BLOG_URL }}
       TISTORY_COOKIE_JSON: ${{ secrets.TISTORY_COOKIE_JSON }}
     steps:
+      - name: Check required secrets
+        id: config
+        shell: bash
+        run: |
+          if [ -z "$TISTORY_BLOG_NAME" ] || [ -z "$TISTORY_COOKIE_JSON" ]; then
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+            echo "Tistory Session Check is not configured yet. Skipping without failure."
+          else
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          fi
       - uses: actions/checkout@v4
+        if: steps.config.outputs.ready == 'true'
       - uses: actions/setup-node@v4
+        if: steps.config.outputs.ready == 'true'
         with:
           node-version: 20
       - run: npm install
+        if: steps.config.outputs.ready == 'true'
       - run: npx playwright install --with-deps chromium
+        if: steps.config.outputs.ready == 'true'
       - run: npm run worker:check-session
+        if: steps.config.outputs.ready == 'true'
